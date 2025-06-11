@@ -1,36 +1,44 @@
 package services;
 
-import models.Car;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class InventoryManager {
-    private List<Car> cars;
+    private Map<String, Car> cars = new HashMap<>();
 
     public InventoryManager() {
-        cars = new ArrayList<>();
-        cars.add(new Car("01", "Toyota Corolla"));
-        cars.add(new Car("02", "Honda Civic"));
-        cars.add(new Car("03", "Ford Mustang"));
+        
+        cars.put("C01", new Car("C01", "Toyota Hilux"));
+        cars.put("C02", new Car("C02", "BMW M3"));
+        cars.put("C03", new Car("C03", "Mercedes c63s Coupe"));
     }
 
-    public void listAvailableCars() {
-        for (Car car : cars) {
-            if (car.isAvailable()) {
-                System.out.println(car);
-            }
+public void listAvailableCars() {
+    System.out.println("\nAvailable Cars:");
+
+    List<Car> sortedCars = new ArrayList<>(cars.values());
+    sortedCars.sort(Comparator.comparing(Car::getId));
+
+    boolean anyAvailable = false;
+    for (Car car : sortedCars) {
+        if (!car.isBooked()) {
+            System.out.println(car);
+            anyAvailable = true;
         }
     }
 
-    public Car findCarById(String id) {
-    if (id == null) return null;
-    String inputId = id.trim().toLowerCase();
-
-    for (Car car : cars) {
-        if (car.getId().toLowerCase().equals(inputId)) {
-            return car;
-        }
+    if (!anyAvailable) {
+        System.out.println("No cars available at the moment.");
     }
-    return null;
-}}
+}
+
+
+    public Car getCar(String carId) {
+        return cars.get(carId);
+    }
+    public void listAllCarsRaw() {
+    System.out.println("ALL CARS IN INVENTORY:");
+    for (Car car : cars.values()) {
+        System.out.println("Raw car object: " + car.getId() + ", booked=" + car.isBooked());
+    }
+}
+}

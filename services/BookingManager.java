@@ -1,37 +1,39 @@
 package services;
 
-import models.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class BookingManager {
-    private List<Rental> rentals;
     private InventoryManager inventory;
 
     public BookingManager(InventoryManager inventory) {
         this.inventory = inventory;
-        this.rentals = new ArrayList<>();
     }
 
-    public void bookCar(String customerName, String carId) {
-        Car car = inventory.findCarById(carId);
-        if (car != null && car.isAvailable()) {
-            car.setAvailable(false);
-            rentals.add(new Rental(car, customerName));
-            System.out.println("Car booked successfully!");
-        } else {
-            System.out.println("Car not available or not found.");
+    public boolean bookCar(String userName, String carId) {
+        Car car = inventory.getCar(carId);
+        if (car == null) {
+            System.out.println("Car ID not found.");
+            return false;
         }
+        if (car.isBooked()) {
+            System.out.println("Car is already booked.");
+            return false;
+        }
+        car.setBooked(true);
+        System.out.println("Car " + carId + " booked successfully for " + userName + ".");
+        return true;
     }
 
-    public void returnCar(String carId) {
-        Car car = inventory.findCarById(carId);
-        if (car != null && !car.isAvailable()) {
-            car.setAvailable(true);
-            System.out.println("Car returned successfully!");
-        } else {
-            System.out.println("Car not found or not currently rented.");
+    public boolean returnCar(String carId) {
+        Car car = inventory.getCar(carId);
+        if (car == null) {
+            System.out.println("Car ID not found.");
+            return false;
         }
+        if (!car.isBooked()) {
+            System.out.println("Car is not currently booked.");
+            return false;
+        }
+        car.setBooked(false);
+        System.out.println("Car " + carId + " returned successfully.");
+        return true;
     }
 }
